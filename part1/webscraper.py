@@ -45,6 +45,10 @@ class Oscars:
                         title = td_tag.b.text.encode('utf-8', 'replace')
                     elif j % 2 == 1:
                         name = td_tag.b.text.encode('utf-8', 'replace')
+                        if name.count(',') >= 2:
+                            name = name.replace(' and', '')
+                        elif 'and' in name:
+                            name = name.replace(' and', ',')
                         entity = {
                             'name': name,
                             'title': title,
@@ -136,6 +140,8 @@ class Oscars:
                         title = td_tag.b.text.encode('ascii', 'replace')
                     elif i % 2 == 1:
                         name = td_tag.b.text.encode('ascii', 'replace')
+                        if '&' in name:
+                            name = name.replace(' &', ',')
                         entity = {
                             'name': name,
                             'title': title,
@@ -151,6 +157,8 @@ class Oscars:
                             title = td_tag.b.text.encode('utf-8', 'replace')
                         elif j % 3 == 1:
                             name = td_tag.b.text.encode('utf-8', 'replace')
+                            if '&' in name:
+                                name = name.replace(' &', ',')
                             entity = {
                                 'name': name,
                                 'title': title,
@@ -230,6 +238,8 @@ class BAFTA:
                 for j, b_tag in enumerate(tr_tag.findAll('b')):
                     if j % 2 == 0:
                         name = b_tag.text.encode('utf-8', 'replace')
+                        if 'and' in name:
+                            name = name.replace(' and', ',')
                     elif j % 2 == 1:
                         title = b_tag.text.encode('utf-8', 'replace')
                         entity = {
@@ -300,6 +310,10 @@ class BAFTA:
                         title = b_tag.text.encode('utf-8', 'replace')
                     elif j % 3 == 1:
                         name = b_tag.text.encode('utf-8', 'replace')
+                        if name.count(',') >= 2:
+                            name = name.replace(' and', '')
+                        elif 'and' in name:
+                            name = name.replace(' and', ',')
                         entity = {
                             'name': name,
                             'title': title,
@@ -360,15 +374,26 @@ class Guilds:
                         title = td_tag.b.text.encode('utf-8', 'replace')
                     else:
                         name = td_tag.b.text.encode('utf-8', 'replace')
-                        entity = {
-                            'name': name,
-                            'title': title,
-                            'year': year
-                        }
+                        if name.count(',') >= 2:
+                            name = name.replace(' and', '')
+                        elif 'and' in name:
+                            name = name.replace(' and', ',')
+                        if year > 2013:
+                            entity = {
+                                'name': name,
+                                'title': title,
+                                'year': year - 1
+                            }
+                        else:
+                            entity = {
+                                'name': name,
+                                'title': title,
+                                'year': year
+                            }
                         results.append(entity)
                         year += 1
 
-        self.create_csv(file="./data/pga/motion_picture.csv", cols=['name', 'title', 'year'], results=results)
+        self.create_csv(file="./data/pga/best_motion_picture.csv", cols=['name', 'title', 'year'], results=results)
 
     def dga(self):
         results = []
@@ -381,6 +406,8 @@ class Guilds:
                 if (i == 5 and j > 7) or (i > 5):
                     if j % 2 == 0:
                         name = td_tag.b.text.encode('utf-8', 'replace')
+                        if 'and' in name:
+                            name = name.replace(' and', ',')
                     else:
                         title = td_tag.b.text.encode('utf-8', 'replace')
                         entity = {
@@ -391,7 +418,7 @@ class Guilds:
                         results.append(entity)
                         year += 1
 
-        self.create_csv(file="./data/dga/feature_film.csv", cols=['name', 'title', 'year'], results=results)
+        self.create_csv(file="./data/dga/best_feature_film.csv", cols=['name', 'title', 'year'], results=results)
 
     def sag(self, option=0):
         attrs = {'class': 'wikitable', 'cellpadding': '5'}
@@ -419,11 +446,18 @@ class Guilds:
                     name = td_tag.b.text.encode('utf-8', 'replace')
                 elif i % 3 == 1:
                     title = td_tag.b.text.encode('utf-8', 'replace')
-                    entity = {
-                        'name': name,
-                        'title': title,
-                        'year': year
-                    }
+                    if (year > 1997) and option == 3:
+                        entity = {
+                            'name': name,
+                            'title': title,
+                            'year': year-1
+                        }
+                    else:
+                        entity = {
+                            'name': name,
+                            'title': title,
+                            'year': year
+                        }
                     results.append(entity)
                     year += 1
 
@@ -433,11 +467,11 @@ class Guilds:
         if original:
             response = requests.get(self.bestScreenplayOriginalWiki)
             attrs = {'style': 'background:#FAEB86'}
-            file = "./data/wga/screenplay_original.csv"
+            file = "./data/wga/best_screenplay_original.csv"
         else:
             response = requests.get(self.bestScreenplayAdaptedWiki)
             attrs = {'style': 'background:#FAEB86;'}
-            file = "./data/wga/screenplay_adapted.csv"
+            file = "./data/wga/best_screenplay_adapted.csv"
 
         results = []
         content = BeautifulSoup(response.content, 'html.parser')
@@ -450,6 +484,10 @@ class Guilds:
                         title = td_tag.b.text.encode('utf-8', 'replace')
                     else:
                         name = td_tag.b.text.encode('utf-8', 'replace')
+                        if name.count(',') >= 2:
+                            name = name.replace(' and', '')
+                        elif 'and' in name:
+                            name = name.replace(' and', ',')
                         entity = {
                             'name': name,
                             'title': title,
